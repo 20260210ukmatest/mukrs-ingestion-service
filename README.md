@@ -53,3 +53,7 @@ python ingest_by_id.py 285 404
   - `excluded_from_ingestion` - when this is set to true on the latest row for a tournament, the tournament is skipped by subsequent ingestion runs. This allows us to take manual control of certain tournaments' data where we know there is an issue and we do not expect that it will be rectified
 - `players` - holds player metadata.
 - `tournament_results` - holds the base ranks achieved by players at tournaments.
+
+## Acknowledgements
+
+This project is heavily based on https://github.com/ea-ncu/ema-riichi-scraper.
