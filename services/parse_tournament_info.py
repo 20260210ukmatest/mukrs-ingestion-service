@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup, Tag
 from dateutil import parser
 from datetime import datetime
 
-from models.tournament import Tournament
+from entities.tournament import Tournament
 from services.get_country_from_img_link import get_country_from_img_link
 
 def __parse_tournament_info_cell(cell: Tag) -> str:

@@ -1,7 +1,7 @@
 from psycopg import Connection
 from psycopg.rows import class_row
 
-from models.tournament import Tournament
+from entities.tournament import Tournament
 
 def get_tournament(conn: Connection, ema_id: int) -> Tournament | None:
     with conn.cursor(row_factory=class_row(Tournament)) as cur:

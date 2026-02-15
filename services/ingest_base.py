@@ -9,6 +9,7 @@ from services.get_dbconn import get_dbconn
 from services.get_tournament import get_tournament
 from services.parse_tournament_info import parse_tournament_info
 from services.parse_tournament_results import parse_tournament_results
+from services.resolve_players_in_tournament_results import resolve_players_in_tournament_results
 from services.save_tournament import save_tournament
 
 def ingest(ema_id: int, earliest_date_to_ingest: None | date = None) -> bool:
@@ -26,6 +27,7 @@ def ingest(ema_id: int, earliest_date_to_ingest: None | date = None) -> bool:
             print(f"Tournament id {ema_id} is too long ago, stopping ingestion")
             return False
         print(f"Ingesting tournament id {ema_id}")
-        player_base_ranks = parse_tournament_results(soup)
-        save_tournament(conn, tournament_info, player_base_ranks)
+        unresolved_tournament_results = parse_tournament_results(soup)
+        tournament_results = resolve_players_in_tournament_results(conn, unresolved_tournament_results)
+        save_tournament(conn, tournament_info, tournament_results)
         return True
