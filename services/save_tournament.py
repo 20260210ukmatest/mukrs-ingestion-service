@@ -61,6 +61,17 @@ def __insert_tournament_results(
                 (tournament_id, player_id, tournament_results[player_id])
             )
 
+def unmark_older_tournament_as_latest(conn: Connection, id: int) -> None:
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            UPDATE tournaments
+            SET is_latest = false
+            WHERE id = %s
+            """,
+            [id]
+        )
+
 def save_tournament(
         conn: Connection,
         existing_tournament_info: TournamentModel | None,
@@ -68,5 +79,8 @@ def save_tournament(
         tournament_results: dict[int, int]) -> None:
     if not __should_save_tournament(conn, existing_tournament_info, tournament_info, tournament_results):
         print(f"Tournament with id {tournament_info.ema_id} already exists and has not changed, skipping save")
+        return
     tournament_id = __insert_tournament(conn, tournament_info)
     __insert_tournament_results(conn, tournament_id, tournament_results)
+    if existing_tournament_info is not None:
+        unmark_older_tournament_as_latest(conn, existing_tournament_info.id)
