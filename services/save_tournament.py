@@ -1,37 +1,32 @@
 from psycopg import Connection
+from psycopg.rows import scalar_row
 from models.tournament import Tournament
 
 def __get_player_id(
         conn: Connection,
         ema_number,
         first_name,
-        last_name):
-    if ema_number:
-        with conn.cursor() as cur1:
-            cur1.execute(
+        last_name) -> int | None:
+    with conn.cursor(row_factory=scalar_row) as cur:
+        if ema_number:
+            cur.execute(
                 "select id from players where ema_number = %s;",
                 [ema_number])
-            player = cur1.fetchone()
-            if player:
-                return player[0]
+            return cur.fetchone()
 
-    with conn.cursor() as cur2:
-        cur2.execute(
+        cur.execute(
             "select id from players where first_name = %s and last_name = %s",
             (first_name, last_name)
         )
-        player = cur2.fetchone()
-        if player:
-            return player[0]
-        return None
+        return cur.fetchone()
 
 def __create_player(
         conn: Connection,
         first_name,
         last_name,
         country,
-        ema_number):
-    with conn.cursor() as cur:
+        ema_number) -> int:
+    with conn.cursor(row_factory=scalar_row) as cur:
         cur.execute(
             """
             insert into players (ema_number, first_name, last_name, country) 
@@ -39,14 +34,15 @@ def __create_player(
             returning id
             """,
             (ema_number, first_name, last_name, country))
-        return cur.fetchone()[0]
+        return next(cur)
 
-def __create_tournament(conn: Connection, tournament_info: Tournament):
-    with conn.cursor() as cur:
+def __create_tournament(conn: Connection, tournament_info: Tournament) -> int:
+    with conn.cursor(row_factory=scalar_row) as cur:
         cur.execute(
             """
             insert into tournaments (ema_id, name, place, country, date, players, mers_weight, mukrs_days) 
-            values (%s, %s, %s, %s, %s, %s, %s, %s) returning id
+            values (%s, %s, %s, %s, %s, %s, %s, %s)
+            returning id
             """,
             (
                 tournament_info.ema_id,
@@ -59,7 +55,7 @@ def __create_tournament(conn: Connection, tournament_info: Tournament):
                 tournament_info.mukrs_days
             )
         )
-        return cur.fetchone()[0]
+        return next(cur)
 
 def __insert_tournament_results(
         conn: Connection,
@@ -73,9 +69,9 @@ def __insert_tournament_results(
         base_rank = player['base_rank']
         if base_rank == "-" or base_rank == "N/A":
             continue
-        player_id = __get_player_id(cur, ema_number, first_name, last_name)
+        player_id = __get_player_id(conn, ema_number, first_name, last_name)
         if player_id is None:
-            player_id = __create_player(cur, first_name, last_name, country, ema_number)
+            player_id = __create_player(conn, first_name, last_name, country, ema_number)
         with conn.cursor() as cur:
             cur.execute(
                 """

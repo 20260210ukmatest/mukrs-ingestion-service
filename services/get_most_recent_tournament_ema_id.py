@@ -13,7 +13,7 @@ def get_most_recent_tournament_ema_id():
         print(f'URL not found, downloading URL {url}')
         res = requests.get(url)
     soup = bs4.BeautifulSoup(res.text, 'html.parser')
-    riichi_tournaments_table = soup.find_all('div', class_='TCTT_lignes')[1]
-    most_recent_tournament_row = riichi_tournaments_table.find_all('div')[-1]
-    most_recent_tournament_ema_id_str = most_recent_tournament_row.find('p').get_text(strip=True)
+    riichi_tournaments_table = soup.select('div.TCTT_lignes')[1]
+    most_recent_tournament_row = riichi_tournaments_table.select('div')[-1]
+    most_recent_tournament_ema_id_str = most_recent_tournament_row.select('p')[0].get_text(strip=True)
     return int(most_recent_tournament_ema_id_str)

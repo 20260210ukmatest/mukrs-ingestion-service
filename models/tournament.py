@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 @dataclass
 class Tournament:
@@ -7,7 +8,7 @@ class Tournament:
     name: str
     place: str
     country: str
-    date: str
+    date: datetime
     players: int
     mers_weight: float
     mukrs_days: int

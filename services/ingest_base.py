@@ -13,14 +13,14 @@ def ingest(ema_id, earliest_date_to_ingest=None):
     DBCONN = get_dbconn()
     with psycopg.connect(DBCONN) as conn:
         existing_tournament_info = get_tournament(conn, ema_id)
-        if existing_tournament_info.excluded_from_ingestion:
+        if existing_tournament_info is not None and existing_tournament_info.excluded_from_ingestion:
             print(f"Tournament with id {ema_id} is excluded from ingestion, skipping")
             return True
         text = download_from_ema(ema_id)
         cleaned_text = clean_ema_data(ema_id, text)
         soup = bs4.BeautifulSoup(cleaned_text, 'html.parser')
         tournament_info = parse_tournament_info(soup)
-        if earliest_date_to_ingest and tournament_info['date'].date() < earliest_date_to_ingest:
+        if earliest_date_to_ingest and tournament_info.date.date() < earliest_date_to_ingest:
             print(f"Tournament id {ema_id} is too long ago, stopping ingestion")
             return False
         print(f"Ingesting tournament id {ema_id}")
