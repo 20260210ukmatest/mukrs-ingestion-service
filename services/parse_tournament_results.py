@@ -1,10 +1,10 @@
 import uuid
 
 from services.get_country_from_img_link import get_country_from_img_link
-from models.player import PlayerDto
+from models.player import PlayerModel
 from bs4 import BeautifulSoup
 
-def parse_tournament_results(soup: BeautifulSoup) -> dict[PlayerDto, int]:
+def parse_tournament_results(soup: BeautifulSoup) -> dict[PlayerModel, int]:
     score_divs = soup.select('.TCTT_lignes')[0].select('div')
     data = {}
     # skip the headers at index 0
@@ -22,6 +22,6 @@ def parse_tournament_results(soup: BeautifulSoup) -> dict[PlayerDto, int]:
         base_rank_text = row_ps[7].get_text(strip=True)
         if base_rank_text == "-" or base_rank_text == "N/A":
             continue
-        player = PlayerDto(first_name=first_name, last_name=last_name, country=get_country_from_img_link(row_ps[4]) or '??', ema_number=ema_number)
+        player = PlayerModel(first_name=first_name, last_name=last_name, country=get_country_from_img_link(row_ps[4]) or '??', ema_number=ema_number)
         data[player] = int(base_rank_text)
     return data

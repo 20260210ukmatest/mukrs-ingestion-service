@@ -8,5 +8,5 @@ if __name__ == '__main__':
     ema_id = get_most_recent_tournament_ema_id()
     ingestion_continuing = True
     while ingestion_continuing:
-        ingestion_continuing = ingest(ema_id, earliest_date_to_ingest)
+        ingestion_continuing = ingest(ema_id, earliest_date_to_ingest) and ema_id > 0
         ema_id -= 1

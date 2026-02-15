@@ -1,15 +1,15 @@
 from psycopg import Connection
 from psycopg.rows import class_row
 
-from entities.tournament import Tournament
+from models.tournament import TournamentModel
 
-def get_tournament(conn: Connection, ema_id: int) -> Tournament | None:
-    with conn.cursor(row_factory=class_row(Tournament)) as cur:
+def get_tournament(conn: Connection, id: int) -> TournamentModel | None:
+    with conn.cursor(row_factory=class_row(TournamentModel)) as cur:
         cur.execute(
             """
             select id, ema_id, name, place, country, date, players, mers_weight, mukrs_days, excluded_from_ingestion
             from tournaments
-            where ema_id = %s
+            where id = %s
             """,
-            [ema_id])
+            [id])
         return cur.fetchone()

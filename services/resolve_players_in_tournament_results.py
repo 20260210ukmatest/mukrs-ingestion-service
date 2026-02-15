@@ -1,10 +1,10 @@
 from psycopg import Connection
 from psycopg.rows import scalar_row
-from models.player import PlayerDto
+from models.player import PlayerModel
 
 def __get_player_id(
         conn: Connection,
-        player: PlayerDto) -> int | None:
+        player: PlayerModel) -> int | None:
     with conn.cursor(row_factory=scalar_row) as cur:
         if player.ema_number:
             cur.execute(
@@ -20,7 +20,7 @@ def __get_player_id(
     
 def __insert_player(
         conn: Connection,
-        player: PlayerDto) -> int:
+        player: PlayerModel) -> int:
     with conn.cursor(row_factory=scalar_row) as cur:
         cur.execute(
             """
@@ -33,7 +33,7 @@ def __insert_player(
     
 def __resolve_player(
         conn: Connection,
-        player: PlayerDto) -> int:
+        player: PlayerModel) -> int:
     player_id = __get_player_id(conn, player)
     if player_id is None:
         player_id = __insert_player(conn, player)
@@ -41,9 +41,5 @@ def __resolve_player(
 
 def resolve_players_in_tournament_results(
         conn: Connection,
-        player_base_ranks: dict[PlayerDto, int]) -> dict[int, int]:
-    resolved_player_base_ranks = {}
-    for player in player_base_ranks.keys():
-        player_id = __resolve_player(conn, player)
-        resolved_player_base_ranks[player_id] = player_base_ranks[player]
-    return resolved_player_base_ranks
+        player_base_ranks: dict[PlayerModel, int]) -> dict[int, int]:
+    return {__resolve_player(conn, player): base_rank for player, base_rank in player_base_ranks.items()}

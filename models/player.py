@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 @dataclass(frozen=True)
-class PlayerDto:
+class PlayerModel:
     first_name: str
     last_name: str
     country: str
