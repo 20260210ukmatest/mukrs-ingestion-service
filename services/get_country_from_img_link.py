@@ -1,6 +1,6 @@
 from bs4 import Tag
 
-def get_country_from_img_link(parent: Tag):
+def get_country_from_img_link(parent: Tag) -> str | None:
     img_tag = parent.select_one('img') 
     if img_tag is None:
         return None

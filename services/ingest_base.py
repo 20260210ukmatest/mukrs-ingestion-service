@@ -1,6 +1,8 @@
 import bs4
 import psycopg
 
+from datetime import datetime
+
 from services.clean_ema_data import clean_ema_data
 from services.download_from_ema import download_from_ema
 from services.get_dbconn import get_dbconn
@@ -9,7 +11,7 @@ from services.parse_tournament_info import parse_tournament_info
 from services.parse_tournament_results import parse_tournament_results
 from services.save_tournament import save_tournament
 
-def ingest(ema_id, earliest_date_to_ingest=None):
+def ingest(ema_id: int, earliest_date_to_ingest: None | datetime = None) -> bool:
     DBCONN = get_dbconn()
     with psycopg.connect(DBCONN) as conn:
         existing_tournament_info = get_tournament(conn, ema_id)

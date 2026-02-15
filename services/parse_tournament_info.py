@@ -17,7 +17,7 @@ def __parse_tournament_info_date(cell: Tag) -> datetime:
     else:
         return parser.parse(date)
 
-def parse_tournament_info(soup: BeautifulSoup):
+def parse_tournament_info(soup: BeautifulSoup) -> Tournament:
     table = soup.select_one('table')
     if table is None:
         raise ValueError('Tournament info table not found')

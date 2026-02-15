@@ -4,9 +4,9 @@ from models.tournament import Tournament
 
 def __get_player_id(
         conn: Connection,
-        ema_number,
-        first_name,
-        last_name) -> int | None:
+        ema_number: str | None,
+        first_name: str,
+        last_name: str) -> int | None:
     with conn.cursor(row_factory=scalar_row) as cur:
         if ema_number:
             cur.execute(
@@ -22,10 +22,10 @@ def __get_player_id(
 
 def __create_player(
         conn: Connection,
-        first_name,
-        last_name,
-        country,
-        ema_number) -> int:
+        first_name: str,
+        last_name: str,
+        country: str,
+        ema_number: str | None) -> int:
     with conn.cursor(row_factory=scalar_row) as cur:
         cur.execute(
             """
@@ -60,7 +60,7 @@ def __create_tournament(conn: Connection, tournament_info: Tournament) -> int:
 def __insert_tournament_results(
         conn: Connection,
         tournament_id: int,
-        player_base_ranks):
+        player_base_ranks: list) -> None:
     for player in player_base_ranks:
         ema_number = player['ema_number']
         last_name = player['last_name']
@@ -84,6 +84,6 @@ def __insert_tournament_results(
 def save_tournament(
         conn: Connection,
         tournament_info: Tournament,
-        player_base_ranks):
+        player_base_ranks: list) -> None:
     tournament_id = __create_tournament(conn, tournament_info)
     __insert_tournament_results(conn, tournament_id, player_base_ranks)

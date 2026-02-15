@@ -1,13 +1,14 @@
 import uuid
 
 from services.get_country_from_img_link import get_country_from_img_link
+from bs4 import BeautifulSoup
 
-def parse_tournament_results(soup):
-    score_divs = soup.select_one('.TCTT_lignes').find_all('div')
+def parse_tournament_results(soup: BeautifulSoup) -> list[dict]:
+    score_divs = soup.select('.TCTT_lignes')[0].select('div')
     data = []
     # skip the headers at index 0
     for row in score_divs[1:]:
-        row_ps = row.find_all('p')
+        row_ps = row.select('p')
         # row_ps[0] is position
         last_name = row_ps[2].get_text(strip=True).casefold()
         first_name = row_ps[3].get_text(strip=True).casefold()

@@ -1,10 +1,10 @@
 import re
 
-def __regex_replace(text, search_regex, replace_text):
+def __regex_replace(text: str, search_regex: str, replace_text: str) -> str:
     p = re.compile(search_regex)
     return p.sub(replace_text, text)
 
-def clean_ema_data(ema_id, text):
+def clean_ema_data(ema_id: int, text: str) -> str:
     match ema_id:
         case 52:
             __regex_replace(text, "17-mars-13", "17 Mar 2013")

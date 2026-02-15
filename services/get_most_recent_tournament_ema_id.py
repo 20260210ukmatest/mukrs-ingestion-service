@@ -3,7 +3,7 @@ import requests
 
 from datetime import datetime
 
-def get_most_recent_tournament_ema_id():
+def get_most_recent_tournament_ema_id() -> int:
     current_year = datetime.now().year
     url = f'http://mahjong-europe.org/ranking/Tournament/Tournaments_{current_year}.html'
     print(f'Downloading URL {url}')
