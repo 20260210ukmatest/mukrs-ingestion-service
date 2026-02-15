@@ -1,11 +1,14 @@
+from bs4 import BeautifulSoup
 from dateutil import parser
+from datetime import datetime
 
+from models.tournament import Tournament
 from services.get_country_from_img_link import get_country_from_img_link
 
-def __parse_tournament_info_cell(cell):
+def __parse_tournament_info_cell(cell: BeautifulSoup) -> str:
     return cell.find_all('td')[1].get_text(strip=True).replace('\n', '')
 
-def __parse_tournament_info_date(cell):
+def __parse_tournament_info_date(cell: BeautifulSoup) -> datetime:
     date = __parse_tournament_info_cell(cell)
     if '-' in date:
         cleaned_date = date.split(' ')[0].split('-')[0] + ' ' + date.split(' ')[
@@ -14,7 +17,7 @@ def __parse_tournament_info_date(cell):
     else:
         return parser.parse(date)
 
-def parse_tournament_info(soup):
+def parse_tournament_info(soup: BeautifulSoup):
     table = soup.find('table')
     rows = table.find_all('tr')
 
@@ -23,13 +26,15 @@ def parse_tournament_info(soup):
     days = int(mers_weight_text[index_of_open_bracket + 6])
     weight = float(mers_weight_text[:index_of_open_bracket])
 
-    return {
-        'ema_id': __parse_tournament_info_cell(rows[1]),
-        'name': __parse_tournament_info_cell(rows[2]),
-        'place': __parse_tournament_info_cell(rows[3]).replace('(see National Stats)',''),
-        'country': get_country_from_img_link(rows[3].find_all('td')[1]),
-        'date': __parse_tournament_info_date(rows[4]),
-        'players': __parse_tournament_info_cell(rows[5]),
-        'mers_weight': weight,
-        'mukrs_days': days
-    }
+    return Tournament(
+        id=None,
+        ema_id=int(__parse_tournament_info_cell(rows[1])),
+        name=__parse_tournament_info_cell(rows[2]),
+        place=__parse_tournament_info_cell(rows[3]).replace('(see National Stats)',''),
+        country=get_country_from_img_link(rows[3].find_all('td')[1]),
+        date=__parse_tournament_info_date(rows[4]),
+        players=int(__parse_tournament_info_cell(rows[5])),
+        mers_weight=weight,
+        mukrs_days=days,
+        excluded_from_ingestion=False
+    )

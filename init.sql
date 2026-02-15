@@ -7,7 +7,8 @@ create table tournaments(
     date date not null,
     players int,
     mers_weight numeric(2,1),
-    mukrs_days int
+    mukrs_days int,
+    excluded_from_ingestion boolean default false
 );
 
 create table players(
