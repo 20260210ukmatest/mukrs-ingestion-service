@@ -2,6 +2,8 @@ import bs4
 import psycopg
 
 from datetime import date
+from psycopg import OperationalError
+from tenacity import retry, retry_if_exception_type, wait_fixed, stop_after_attempt
 
 from services.clean_ema_data import clean_ema_data
 from services.download_from_ema import download_from_ema
@@ -13,6 +15,7 @@ from services.parse_tournament_results import parse_tournament_results
 from services.resolve_players_in_tournament_results import resolve_players_in_tournament_results
 from services.save_tournament import save_tournament
 
+@retry(retry=retry_if_exception_type(OperationalError), wait=wait_fixed(45), stop=stop_after_attempt(3))
 def ingest(ema_id: int, earliest_date_to_ingest: None | date = None) -> bool:
     DBCONN = get_dbconn()
     with psycopg.connect(DBCONN) as conn:
