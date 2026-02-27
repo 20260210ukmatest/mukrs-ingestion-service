@@ -15,7 +15,10 @@ from services.parse_tournament_results import parse_tournament_results
 from services.resolve_players_in_tournament_results import resolve_players_in_tournament_results
 from services.save_tournament import save_tournament
 
-@retry(retry=retry_if_exception_type(OperationalError), wait=wait_fixed(45), stop=stop_after_attempt(3))
+@retry(retry=retry_if_exception_type(OperationalError),
+       wait=wait_fixed(45),
+       stop=stop_after_attempt(3),
+       before_sleep=lambda retry_state: print(f"Failed to connect to database, retrying in 45 seconds... (Attempt {retry_state.attempt_number}/3)"))
 def ingest(ema_id: int, earliest_date_to_ingest: None | date = None) -> bool:
     DBCONN = get_dbconn()
     with psycopg.connect(DBCONN) as conn:
